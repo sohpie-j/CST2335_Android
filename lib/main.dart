@@ -111,13 +111,14 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Text(
               'You have pushed the button this many times:', style: TextStyle(fontSize:60)),
-               Image.asset("images/algonquin.jpg", width: 800, height:400)
+               Image.asset("images/algonquin.jpg", width: 800, height:400),
 
-            // Text(
-            //   '$_counter',
-            //   style: Theme.of(context).textTheme.headlineMedium,
-            // ),
-          ],
+               //ElevatedButton( onPressed: buttonClicked,
+               ElevatedButton(onPressed: () {        },
+                   //child:  Text("Click me") , style:TextStyle(fontSize:40) )
+                   child: Image.asset("images/algonquin.jpg", width: 800, height:400), )
+
+               ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -127,4 +128,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  void buttonClicked  () {
+  }
+
+
+  }
+
+
+
+
+
 }
