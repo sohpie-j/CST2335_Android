@@ -60,8 +60,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
+  //int _counter = 0;
   // late TextEditingController _controller;  // call it somewhere else. late- constructor in inState, not null
 
   var isChecked = false;
@@ -73,14 +72,14 @@ class _MyHomePageState extends State<MyHomePage> {
   // final TextEditingController _passwordController = TextEditingController();
   String imageSource = 'images/question.png';  // Initial image
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  // void _incrementCounter() {
+  //   setState(() {
+  //     // This call to setState tells the Flutter framework that something has changed in this State, which causes it to rerun the build method below
+  //     // so that the display can reflect the updated values. If we changed _counter without calling setState(), then the build method would not be
+  //     // called again, and so nothing would appear to happen.
+  //     _counter++;
+  //   });
+  // }
 
 @override
   void initState() {
@@ -90,11 +89,12 @@ class _MyHomePageState extends State<MyHomePage> {
     _passwordController = TextEditingController();
   }
 @override
-  bool operator ==(Object other) {
+  bool operator == (Object other) {
     // TODO: implement ==
     return super == other;
   }
 
+  @override
   void dispose() {
 
     // _controller.dispose();
@@ -135,12 +135,12 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget> [
             const Padding (
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               //padding: EdgeInsets.fromLTRB(0.0, 20.0, 39.0, 0.0), child: Text('You have pushed the button this many times:', style: TextStyle(fontSize:60.0)),
             ),
 
-            TextField(controller: _loginController, decoration: InputDecoration( hintText:"Type here", labelText: "Login", border: OutlineInputBorder()), ), //TextField
-            TextField(controller: _passwordController, obscureText:true, decoration: InputDecoration( hintText:"Type here", labelText: "Password", border: OutlineInputBorder()), ), //TextField
+            TextField(controller: _loginController, decoration: const InputDecoration( hintText:"Type here", labelText: "Login", border: OutlineInputBorder()), ), //TextField
+            TextField(controller: _passwordController, obscureText:true, decoration: const InputDecoration( hintText:"Type here", labelText: "Password", border: OutlineInputBorder()), ), //TextField
 
             // Padding(padding: EdgeInsets.all(16.0), child:Image.asset("images/algonquin.jpg", height: 600, width:800,) ),
             //ElevatedButton( onPressed: buttonClicked,
@@ -157,10 +157,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                 }
                             });
                           },
-              child: Text('Login'),
+              child: const Text('Login'),
             ),
 
-            SizedBox(height: 20), Image.asset( imageSource, width: 300, height: 300, ),
+            //const SizedBox(height: 20), Image.asset( imageSource, width: 300, height: 300, ),
+            Flexible( child: Image.asset( imageSource, width: 300, height: 300,),),
           ],
         ),
       ),
