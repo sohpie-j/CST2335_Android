@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
 
 
 
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -61,6 +62,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  late TextEditingController _controller;  // late- constructor in inState, not null
+
+  var isChecked = false;
+
+  // late TextEditingController _loginController;
+  // late TextEditingController _passwordController;
+
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String imageSource = 'images/question.png';  // Initial image
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -71,6 +83,24 @@ class _MyHomePageState extends State<MyHomePage> {
       _counter++;
     });
   }
+
+@override
+  void initState() {
+
+    super.initState();
+    _controller=TextEditingController();
+  }
+@override
+  bool operator ==(Object other) {
+    // TODO: implement ==
+    return super == other;
+  }
+
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -109,23 +139,48 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:', style: TextStyle(fontSize:60)),
-               Image.asset("images/algonquin.jpg", width: 400, height:400),
+            const Padding(
+              padding: const EdgeInsets.all(16.0),
+              //padding: EdgeInsets.fromLTRB(0.0, 20.0, 39.0, 0.0),
+              //child: Text('You have pushed the button this many times:', style: TextStyle(fontSize:60.0)),
+            ),
 
-               //ElevatedButton( onPressed: buttonClicked,
-               ElevatedButton(onPressed: () {        },
-                   //child:  Text("Click me") , style:TextStyle(fontSize:40) )
-                   child: Image.asset("images/algonquin.jpg", width: 100, height:100), )
+            TextField(controller: _loginController,
+              decoration: InputDecoration( hintText:"Type here", labelText: "Login", border: OutlineInputBorder()),
+            ),
 
+            TextField(controller: _passwordController,
+              obscureText:true,
+              decoration: InputDecoration( hintText:"Type here", labelText: "Password", border: OutlineInputBorder()),
+            ),
+
+            // Padding(padding: EdgeInsets.all(16.0),
+            //        child:Image.asset("images/algonquin.jpg", height: 600, width:800,)
+            //    ),
+
+            //ElevatedButton( onPressed: buttonClicked,
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  if (_passwordController.text == 'QWERTY123') {
+                    imageSource = 'images/light.png';
+                  } else {
+                    imageSource = 'images/stop.png';
+                  }
+                });
+              },
+              child: Text('Login'),
+            ),
+            SizedBox(height: 20),
+            Image.asset(
+              imageSource,
+              width: 300,
+              height: 300,
+            ),
                ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      //floatingActionButton: FloatingActionButton( onPressed: _incrementCounter, tooltip: 'Increment', child: const Icon(Icons.add),), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
