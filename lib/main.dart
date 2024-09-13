@@ -62,23 +62,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  late TextEditingController _controller;  // late- constructor in inState, not null
+  // late TextEditingController _controller;  // call it somewhere else. late- constructor in inState, not null
 
   var isChecked = false;
 
-  // late TextEditingController _loginController;
-  // late TextEditingController _passwordController;
+  late TextEditingController _loginController;
+  late TextEditingController _passwordController;
 
-  final TextEditingController _loginController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  // final TextEditingController _loginController = TextEditingController();
+  // final TextEditingController _passwordController = TextEditingController();
   String imageSource = 'images/question.png';  // Initial image
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
+      // This call to setState tells the Flutter framework that something has changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
     });
@@ -88,7 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
 
     super.initState();
-    _controller=TextEditingController();
+    _loginController = TextEditingController();
+    _passwordController = TextEditingController();
   }
 @override
   bool operator ==(Object other) {
@@ -97,23 +96,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void dispose() {
-    _controller.dispose();
+
+    // _controller.dispose();
+    _loginController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
+    // This method is rerun every time setState is called, for instance as done by the _incrementCounter method above.
+    // The Flutter framework has been optimized to make rerunning build methods fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // TRY THIS: Try changing the color here to a specific color (to Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
@@ -124,60 +123,45 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
+          // Column is also a layout widget. It takes a list of children and arranges them vertically. By default, it sizes itself to fit its
           // children horizontally, and tries to be as tall as its parent.
           //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
+          // Column has various properties to control how it sizes itself and how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical axis because Columns are vertical (the cross axis would be horizontal).
           //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
+          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint" action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
+
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Padding(
+          children: <Widget> [
+            const Padding (
               padding: const EdgeInsets.all(16.0),
-              //padding: EdgeInsets.fromLTRB(0.0, 20.0, 39.0, 0.0),
-              //child: Text('You have pushed the button this many times:', style: TextStyle(fontSize:60.0)),
+              //padding: EdgeInsets.fromLTRB(0.0, 20.0, 39.0, 0.0), child: Text('You have pushed the button this many times:', style: TextStyle(fontSize:60.0)),
             ),
 
-            TextField(controller: _loginController,
-              decoration: InputDecoration( hintText:"Type here", labelText: "Login", border: OutlineInputBorder()),
-            ),
+            TextField(controller: _loginController, decoration: InputDecoration( hintText:"Type here", labelText: "Login", border: OutlineInputBorder()), ), //TextField
+            TextField(controller: _passwordController, obscureText:true, decoration: InputDecoration( hintText:"Type here", labelText: "Password", border: OutlineInputBorder()), ), //TextField
 
-            TextField(controller: _passwordController,
-              obscureText:true,
-              decoration: InputDecoration( hintText:"Type here", labelText: "Password", border: OutlineInputBorder()),
-            ),
-
-            // Padding(padding: EdgeInsets.all(16.0),
-            //        child:Image.asset("images/algonquin.jpg", height: 600, width:800,)
-            //    ),
-
+            // Padding(padding: EdgeInsets.all(16.0), child:Image.asset("images/algonquin.jpg", height: 600, width:800,) ),
             //ElevatedButton( onPressed: buttonClicked,
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  if (_passwordController.text == 'QWERTY123') {
-                    imageSource = 'images/light.png';
-                  } else {
-                    imageSource = 'images/stop.png';
-                  }
-                });
-              },
+            ElevatedButton( onPressed: ()
+                          {
+                            setState(()
+                            {
+                                if (_passwordController.text == 'QWERTY123')
+                                {
+                                   imageSource = 'images/light.png';
+                                } else
+                                {
+                                   imageSource = 'images/stop.png';
+                                }
+                            });
+                          },
               child: Text('Login'),
             ),
-            SizedBox(height: 20),
-            Image.asset(
-              imageSource,
-              width: 300,
-              height: 300,
-            ),
-               ],
+
+            SizedBox(height: 20), Image.asset( imageSource, width: 300, height: 300, ),
+          ],
         ),
       ),
       //floatingActionButton: FloatingActionButton( onPressed: _incrementCounter, tooltip: 'Increment', child: const Icon(Icons.add),), // This trailing comma makes auto-formatting nicer for build methods.
