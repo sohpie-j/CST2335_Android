@@ -133,15 +133,25 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         //child: Column( mainAxisAlignment: MainAxisAlignment.spaceAround,
-        child: Stack(
-          alignment: AlignmentDirectional.bottomCenter,
+        child:
+            Padding(
+                padding: EdgeInsets.all(30.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, //(left/right)
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget> [
 
-            Image.asset("images/algonquin.jpg"),
-            Text("Algonquin College", style: TextStyle(fontSize: 30.0, backgroundColor:Colors.white ),)
+            Text("AOne-pan skillet Cookie", style: TextStyle(fontSize: 30.0, backgroundColor:Colors.orange ),),
+            Text("Ingredient list" ),
+            SizedBox(height:100, width:200),
+            Row(children:[Icon(Icons.add_circle), Text("1 stick (8 tbsp) unslated butter")]),
+            Row(children: [Icon(Icons.add_circle), Text("1/2 granulated sugar")]),
+
+            Text("AOne-pan skillet Cookie", style: TextStyle(fontSize: 30.0, backgroundColor:Colors.orange ),),
 
           ],
-        ),
+        ), ),
+
       ),
     );
   }
