@@ -17,22 +17,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false, //removed debug symbol on right up corner.
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -107,10 +93,43 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
+  //TOP-MOST ELEMENT IS Scaffold
     return Scaffold(
+      drawer:
+      Column(children: [
+        Text("I am in a drawer"),
+        Text("I am in a drawer"),
+        Text("I am in a drawer"),
+        Text("I am in a drawer"),
+        Text("I am in a drawer"),
+      ]),
+      //drawer: Text("I am in a drawer"),
+
+      bottomNavigationBar: BottomNavigationBar(
+          onTap: ( whichItem) {    //double whichItem -- double can deleted
+            if (whichItem == 0){
+
+            } else if (whichItem ==1) {
+
+            }
+          },
+          items: [
+        BottomNavigationBarItem(icon: Icon(Icons.add_a_photo_outlined), label:"Camera"),
+        BottomNavigationBarItem(icon: Icon(Icons.add_card), label: "Payment"),
+
+      ]),
       appBar: AppBar(
+        actions: [
+         // Column(children:[
+          OutlinedButton(onPressed: () {}, child: Text("Button 1")),
+          OutlinedButton(onPressed: () {}, child: Text("Button 2")),
+          OutlinedButton(onPressed: () {}, child: Text("Button 3")),
+          OutlinedButton(onPressed: () {}, child: Text("Button 4")),
+          OutlinedButton(onPressed: () {}, child: Text("Button 5")),
+        //  ]) //makes column
+        ], // arrary of Widgets
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-       title: Text(widget.title),
+       title: Text("KyungA's Application"),
       ),
       body: Center(
         //child: Column( mainAxisAlignment: MainAxisAlignment.spaceAround,
