@@ -133,14 +133,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         //child: Column( mainAxisAlignment: MainAxisAlignment.spaceAround,
-        child: Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
+        child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
           children: <Widget> [
-            ElevatedButton(child:Text("Button1"), onPressed:buttonClicked),
-            ElevatedButton(child:Text("Button2"), onPressed:buttonClicked),
-            ElevatedButton(child:Text("Button3"), onPressed:buttonClicked),
-            ElevatedButton(child:Text("Button4"), onPressed:buttonClicked),
-            ElevatedButton(child:Text("Button5"), onPressed:buttonClicked),
-            ElevatedButton(child:Text("Button6"), onPressed:buttonClicked),
+
+            Image.asset("images/algonquin.jpg"),
+            Text("Algonquin College", style: TextStyle(fontSize: 30.0, backgroundColor:Colors.white ),)
 
           ],
         ),
