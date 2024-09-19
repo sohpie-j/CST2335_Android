@@ -141,6 +141,11 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget> [
 
+            CircleAvatar(
+              backgroundImage: AssetImage('images/algonquin.jpg'),
+              radius: 50,
+            ),
+
             Text("AOne-pan skillet Cookie", style: TextStyle(fontSize: 30.0, backgroundColor:Colors.orange ),),
             Text("Ingredient list" ),
             SizedBox(height:100, width:200),
