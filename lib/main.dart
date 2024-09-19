@@ -113,7 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
        title: Text(widget.title),
       ),
       body: Center(
-        child: Column( mainAxisAlignment: MainAxisAlignment.center,
+        //child: Column( mainAxisAlignment: MainAxisAlignment.spaceAround,
+        child: Row( mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget> [
             ElevatedButton(child:Text("Button1"), onPressed:buttonClicked),
             ElevatedButton(child:Text("Button2"), onPressed:buttonClicked),
