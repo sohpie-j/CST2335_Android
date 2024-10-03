@@ -57,6 +57,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  late TextEditingController _controller; //late - Constructor in initState()
+
+  var isChecked = false;
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -66,6 +70,21 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
+  }
+
+
+  @override //same as in java
+  void initState() {
+    super.initState(); //call the parent initState()
+    _controller = TextEditingController(); //our late constructor
+  }
+
+
+  @override
+  void dispose()
+  {
+    super.dispose();
+    _controller.dispose();    // clean up memory
   }
 
   @override
@@ -105,13 +124,38 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            const  Padding(
+                padding: EdgeInsets.fromLTRB(0.0, 20.0, 39.0, 0.0),
+                child: Text('You have pushed the button this many times:',style:TextStyle(fontSize: 60.0))
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+
+
+            TextField(controller: _controller,
+              decoration: InputDecoration(
+                hintText: "Type something here",
+                labelText:"Put your first name here",
+                border: OutlineInputBorder(),
+              ),
             ),
+
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Image.asset("images/algonquin.jpg", height:600, width:800),
+            ),
+
+
+            ElevatedButton( onPressed: ( ){
+              //what was typed is:
+              var input = _controller.value.text;
+
+
+              //to overwrite:
+              _controller.text = "You typed in:" + input;
+
+            }, //Lambda, or anonymous function
+              child:Image.asset("images/algonquin.jpg", height:200, width:200),  )
+
+
           ],
         ),
       ),
@@ -122,4 +166,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  //this runs when you click the button
+  void buttonClicked   ( ){
+
+  }
+
+
 }
