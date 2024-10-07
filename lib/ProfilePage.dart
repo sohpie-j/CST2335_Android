@@ -1,54 +1,104 @@
-// profile_page.dart
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:url_launcher/url_launcher.dart';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ProfilePage extends StatefulWidget {
   final String username;
+
   const ProfilePage({super.key, required this.username});
+
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
+
 class _ProfilePageState extends State<ProfilePage> {
-  TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
-  TextEditingController phoneNumberController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+  late TextEditingController _controllerFName;
+  late TextEditingController _controllerLName;
+  late TextEditingController _controllerPNumber;
+  late TextEditingController _controllerEAddress;
+
   @override
   void initState() {
     super.initState();
-    // Load data from repository here
+    _controllerFName = TextEditingController();
+    _controllerLName = TextEditingController();
+    _controllerPNumber = TextEditingController();
+    _controllerEAddress = TextEditingController();
+
+    _loadData(); // Load saved data from secure storage when the page opens
   }
+
+  Future<void> _loadData() async {
+    _controllerFName.text = await storage.read(key: 'firstName') ?? '';
+    _controllerLName.text = await storage.read(key: 'lastName') ?? '';
+    _controllerPNumber.text = await storage.read(key: 'phoneNumber') ?? '';
+    _controllerEAddress.text = await storage.read(key: 'email') ?? '';
+  }
+
+  Future<void> _saveData() async {
+    await storage.write(key: 'firstName', value: _controllerFName.text);
+    await storage.write(key: 'lastName', value: _controllerLName.text);
+    await storage.write(key: 'phoneNumber', value: _controllerPNumber.text);
+    await storage.write(key: 'email', value: _controllerEAddress.text);
+  }
+
   @override
   void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
-    phoneNumberController.dispose();
-    emailController.dispose();
+    _saveData(); // Save data before the page is destroyed
+    _controllerFName.dispose();
+    _controllerLName.dispose();
+    _controllerPNumber.dispose();
+    _controllerEAddress.dispose();
     super.dispose();
   }
-  void _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
 
-    if (await canLaunch(url)) {
-      await launch(url);
+  // Launch Phone Dialer
+  void _launchDialer(String phoneNumber) async {
+    final Uri dialerUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(dialerUri)) {
+      await launchUrl(dialerUri);
     } else {
-      _showAlertDialog("This URL is not supported on this device.");
+      _showAlertDialog("Phone dialer not supported on this device.");
     }
   }
+
+  // Launch SMS Application
+  void _launchSMS(String phoneNumber) async {
+    final Uri smsUri = Uri(scheme: 'sms', path: phoneNumber);
+    if (await canLaunchUrl(smsUri)) {
+      await launchUrl(smsUri);
+    } else {
+      _showAlertDialog("SMS not supported on this device.");
+    }
+  }
+
+  // Launch Email Application
+  void _launchEmail(String emailAddress) async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: emailAddress,
+    );
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri);
+    } else {
+      _showAlertDialog("Email not supported on this device.");
+    }
+  }
+
+  // Show AlertDialog if a URL scheme is not supported
   void _showAlertDialog(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Error"),
+          title: const Text("Error"),
           content: Text(message),
-          actions: [
+          actions: <Widget>[
             TextButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -56,56 +106,98 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Welcome Back, User!')),
+      );
+    });
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile Page'),
+        title: const Text("Profile Page"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: [
-            Text('Welcome Back, ${widget.username}!', style: TextStyle(fontSize: 24)),
-            TextField(
-              controller: firstNameController,
-              decoration: InputDecoration(labelText: 'First Name'),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "Welcome Back, ${widget.username}!",
+              style: const TextStyle(fontSize: 24),
             ),
+            const SizedBox(height: 20),
+            // First Name Field
             TextField(
-              controller: lastNameController,
-              decoration: InputDecoration(labelText: 'Last Name'),
+              controller: _controllerFName,
+              decoration: const InputDecoration(
+                labelText: "First Name",
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 10),
+            // Last Name Field
+            TextField(
+              controller: _controllerLName,
+              decoration: const InputDecoration(
+                labelText: "Last Name",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Phone Number Field with buttons for Phone and SMS
             Row(
               children: [
                 Flexible(
                   child: TextField(
-                    controller: phoneNumberController,
-                    decoration: InputDecoration(labelText: 'Phone Number'),
+                    controller: _controllerPNumber,
+                    decoration: const InputDecoration(
+                      labelText: "Phone Number",
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.phone,
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.phone),
+                const SizedBox(width: 10),
+                ElevatedButton(
                   onPressed: () {
-                    _launchURL('tel:${phoneNumberController.text}');
+                    _launchDialer(_controllerPNumber.text);
                   },
+                  child: const Icon(Icons.phone),
                 ),
-                IconButton(
-                  icon: Icon(Icons.message),
+                const SizedBox(width: 5),
+                ElevatedButton(
                   onPressed: () {
-                    _launchURL('sms:${phoneNumberController.text}');
+                    _launchSMS(_controllerPNumber.text);
                   },
+                  child: const Icon(Icons.message),
                 ),
               ],
             ),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: 'Email Address'),
-            ),
-            IconButton(
-              icon: Icon(Icons.mail),
-              onPressed: () {
-                _launchURL('mailto:${emailController.text}');
-              },
+            const SizedBox(height: 10),
+            // Email Address Field with Mail Button
+            Row(
+              children: [
+                Flexible(
+                  child: TextField(
+                    controller: _controllerEAddress,
+                    decoration: const InputDecoration(
+                      labelText: "Email Address",
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    _launchEmail(_controllerEAddress.text);
+                  },
+                  child: const Icon(Icons.email),
+                ),
+              ],
             ),
           ],
         ),

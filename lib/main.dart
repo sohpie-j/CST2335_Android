@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'ProfilePage.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -125,30 +127,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class ProfilePage extends StatelessWidget {
-  final String username; // Accept the username from the previous page
-
-  const ProfilePage({super.key, required this.username});
-
-  @override
-  Widget build(BuildContext context) {
-    // Show a SnackBar welcoming the user
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Welcome Back, $username!')),
-      );
-    });
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile Page"),
-      ),
-      body: Center(
-        child: Text(
-          "Welcome back, $username!",
-          style: const TextStyle(fontSize: 24),
-        ),
-      ),
-    );
-  }
-}
+// class ProfilePage extends StatelessWidget {
+//   final String username; // Accept the username from the previous page
+//
+//   const ProfilePage({super.key, required this.username});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     // Show a SnackBar welcoming the user
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Welcome Back, $username!')),
+//       );
+//     });
+//
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Profile Page"),
+//       ),
+//       body: Center(
+//         child: Text(
+//           "Welcome back, $username!",
+//           style: const TextStyle(fontSize: 24),
+//         ),
+//       ),
+//     );
+//   }
+// }
