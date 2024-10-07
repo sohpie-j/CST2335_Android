@@ -131,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
             TextField(controller: _controller,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Type something here",
                 labelText:"Put your first name here",
                 border: OutlineInputBorder(),
@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
             Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Image.asset("images/algonquin.jpg", height:600, width:800),
             ),
 
@@ -150,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
               //to overwrite:
-              _controller.text = "You typed in:" + input;
+              _controller.text = "You typed in:$input";
 
             }, //Lambda, or anonymous function
               child:Image.asset("images/algonquin.jpg", height:200, width:200),  )
