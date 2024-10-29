@@ -30,28 +30,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   late BuildContext theContext;
+  late TextEditingController _controller;
+  List<String> words = [];
 
-  late TextEditingController _controller; //late - Constructor in initState()
-
-
-  //called first:
-  @override //same as in java
-  void initState()  {
-    super.initState(); //call the parent initState()
-    _controller = TextEditingController(); //our late constructor
-
+  // Initializing the controller
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
   }
-
 
   @override
-  void dispose()
-  {
+  void dispose() {
     super.dispose();
-    _controller.dispose();    // clean up memory
+    _controller.dispose();
   }
 
+  // Function to add items to the list
+  void _addItem() {
+    setState(() {
+      words.add(_controller.text);
+      _controller.clear(); // Clear the TextField after adding
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,22 +64,55 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text("Week 4"),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextField(controller: _controller,
-                decoration: InputDecoration(
-                    hintText:"Type your login name",
-                    border: OutlineInputBorder(),
-                    labelText: "Login"
-                ))
-          ],
-        ),
+      body: Column(
+        children: [
+          // Row with TextField and Add Button
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+
+                ElevatedButton(
+                  onPressed: _addItem,
+                  child: Text("Add item"),
+                ),
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: "Enter",
+                      border: OutlineInputBorder(),
+                      labelText: "To do item",
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8), // Space between TextField and Button
+
+              ],
+            ),
+          ),
+          // Expanded ListView to show the list items
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: words.length,
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      words.removeAt(index);
+                    });
+                  },
+                  child: ListTile(
+                    title: Text(words[index]),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
-
-
-
 }
