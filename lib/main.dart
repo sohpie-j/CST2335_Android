@@ -7,6 +7,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,125 +30,54 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // List to hold the to-do items
-  List<String> _todoItems = [];
 
-  // Controller to handle TextField input
-  late TextEditingController _controller;
+  late BuildContext theContext;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
+  late TextEditingController _controller; //late - Constructor in initState()
+
+
+  //called first:
+  @override //same as in java
+  void initState()  {
+    super.initState(); //call the parent initState()
+    _controller = TextEditingController(); //our late constructor
+
   }
 
+
   @override
-  void dispose() {
-    _controller.dispose();
+  void dispose()
+  {
     super.dispose();
+    _controller.dispose();    // clean up memory
   }
 
-  // Function to add an item to the list
-  void _addToDoItem(String item) {
-    setState(() {
-      _todoItems.add(item); // Add item to list
-      _controller.clear(); // Clear the TextField after adding
-    });
-  }
-
-  // Function to show dialog to confirm deletion
-  void _deleteToDoItem(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Delete Item"),
-          content: const Text("Are you sure you want to delete this item?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _todoItems.removeAt(index); // Delete the item
-                });
-                Navigator.of(context).pop(); // Close dialog
-              },
-              child: const Text("Yes"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog without deleting
-              },
-              child: const Text("No"),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
+    theContext = context;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text("Week 4"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Center(
         child: Column(
-          children: [
-            // Row for TextField and Add Button
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    if (_controller.text.isNotEmpty) {
-                      _addToDoItem(_controller.text); // Add item when 'Add' is pressed
-                    }
-                  },
-                  child: const Text("Add"),
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter a task',
-                    ),
-                  ),
-                ),
-
-              ],
-            ),
-            const SizedBox(height: 20),
-            // Display list of items or a message if the list is empty
-            Expanded(
-              child: _todoItems.isEmpty
-                  ? const Center(
-                child: Text('There are no items in the list'),
-              ) : ListView.builder(
-                itemCount: _todoItems.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onLongPress: () {
-                      _deleteToDoItem(index); // Trigger delete on long press
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Item $index:'), // Display row number
-                          Text(_todoItems[index]), // Display the to-do item
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextField(controller: _controller,
+                decoration: InputDecoration(
+                    hintText:"Type your login name",
+                    border: OutlineInputBorder(),
+                    labelText: "Login"
+                ))
           ],
         ),
       ),
     );
   }
+
+
+
 }
