@@ -55,6 +55,36 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // Remove item with confirmation dialog
+  void _confirmDelete(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Item'),
+          content: Text('Are you sure you want to delete this item?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  words.removeAt(index); // Remove item if 'Yes' is selected
+                });
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     theContext = context;
@@ -94,18 +124,25 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           // Expanded ListView to show the list items
           Expanded(
-            child: ListView.builder(
+            child: words.isEmpty
+                ? Center(child: Text("There are no items in the list"))
+                : ListView.builder(
               padding: const EdgeInsets.all(8),
               itemCount: words.length,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      words.removeAt(index);
-                    });
-                  },
-                  child: ListTile(
-                    title: Text(words[index]),
+                  onLongPress: () => _confirmDelete(index), // Long press to confirm delete
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${index + 1}.', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(words[index]),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
