@@ -153,7 +153,7 @@ class _$ToDoItemDao extends ToDoItemDao {
   }
 
   @override
-  Future<void> anyNameYouWant(ToDoItem itm) async {
+  Future<void> insertItem(ToDoItem itm) async {
     await _toDoItemInsertionAdapter.insert(itm, OnConflictStrategy.abort);
   }
 

@@ -10,7 +10,7 @@ abstract class ToDoItemDao {
   Future<List<ToDoItem>> getAllToDoItem();
 
   @insert // generate the insertion code for item in the database
-  Future<void> anyNameYouWant (ToDoItem itm);
+  Future<void> insertItem (ToDoItem itm);
 
   @delete // generate the delete code for item in the database
   Future<void> deleteToDoItem(ToDoItem itm);
