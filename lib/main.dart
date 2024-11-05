@@ -3,83 +3,147 @@ import 'package:my_cst2335_labs/ToDoDatabase.dart';
 import 'package:my_cst2335_labs/ToDoItemDao.dart';
 import 'ToDoItem.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final database = await $FloorToDoDatabase.databaseBuilder('app_database.db').build();
+  final dao = database.toDoItemDao;
+  runApp(MyApp(dao));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ToDoItemDao dao;
+
+  MyApp(this.dao);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Demo Home Page',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.deepPurple,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: ToDoHomePage(dao: dao),
     );
   }
 }
+class ToDoHomePage extends StatefulWidget {
+  final ToDoItemDao dao;
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  ToDoHomePage({required this.dao});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _ToDoHomePageState createState() => _ToDoHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  late BuildContext theContext;
-  late TextEditingController _controller;
-  late ToDoItemDao myDAO;
-
-  List<ToDoItem> items = [];
+class _ToDoHomePageState extends State<ToDoHomePage> {
+  final List<ToDoItem> _items = [];
+  final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _loadItemsFromDatabase();
+  }
 
-    // Initialize the database and load items
-    $FloorToDoDatabase.databaseBuilder('filenameOnYourDevice.db')
-        .build()
-        .then((database) async {
-      myDAO = database.toDoItemDao;
-
-      // Load existing items from the database
-      items = await myDAO.getAllToDoItem();
-      setState(() {}); // Refresh the UI after loading items
+  Future<void> _loadItemsFromDatabase() async {
+    final items = await widget.dao.getAllToDoItem();
+    setState(() {
+      _items.clear();
+      _items.addAll(items);
     });
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Center(
+          child: Text('Flutter Demo Home Page'),
+        ),
+        backgroundColor: Colors.deepPurple[200],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: _addItem,
+                  child: Text('Add'),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: TextField(
+                        controller: _textController,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter a to-do item',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Expanded(
+              child: _items.isEmpty
+                  ? Center(
+                child: Text('There are no items in the list'),
+              )
+                  : ListView.builder(
+                itemCount: _items.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onLongPress: () => _confirmDeleteItem(index),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text('Item $index: ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(_items[index].item),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  void _incrementCounter() {
-    setState(() {
-      var input = _controller.text;
-      if (input.isNotEmpty) {
-        var todoItem = ToDoItem(ToDoItem.ID++, input);
-        myDAO.insertItem(todoItem); // Save item to the database
-        items.add(todoItem);        // Add item to the local list
-        _controller.clear();         // Clear the text field after adding
-      }
-    });
+  Future<void> _addItem() async {
+    if (_textController.text.isNotEmpty) {
+      final newItem = ToDoItem(ToDoItem.ID++, _textController.text); // Increment ID for uniqueness
+      await widget.dao.insertItem(newItem); // Insert new item into the database
+      setState(() {
+        _items.add(newItem); // Add new item to the local list
+        _textController.clear(); // Clear the text field
+      });
+    }
   }
 
-  void _confirmDelete(int index) {
+
+  void _confirmDeleteItem(int index) {
     showDialog(
-      context: context,
+      context: this.context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Delete Item'),
-          content: Text('Are you sure you want to delete this item?'),
+          content: Text('Do you want to delete this item?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -89,10 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
-                setState(() {
-                  myDAO.deleteToDoItem(items[index]); // Delete from the database
-                  items.removeAt(index);               // Remove item from the local list
-                });
+                _deleteItem(index);
                 Navigator.of(context).pop();
               },
               child: Text('Yes'),
@@ -103,60 +164,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    theContext = context;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Flexible(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: "Type something here",
-                      labelText: "Put your first name here",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10), // Spacing between TextField and Button
-                ElevatedButton(
-                  onPressed: _incrementCounter,
-                  child: Text("Add ToDo"),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: items.isEmpty
-                ? Center(child: Text("There are no items in the list"))
-                : ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: items.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text("Item ${index + 1}: ${items[index].toString()}"),
-                  onLongPress: () => _confirmDelete(index),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Add ToDo',
-        child: const Icon(Icons.add),
-      ),
-    );
+  Future<void> _deleteItem(int index) async {
+    final itemContent = _items[index];
+    await widget.dao.deleteToDoItem(itemContent );
+    setState(() {
+      _items.removeAt(index);
+    });
   }
 }
