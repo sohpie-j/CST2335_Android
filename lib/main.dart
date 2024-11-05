@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_cst2335_labs/ToDoDatabase.dart';
-import 'package:my_cst2335_labs/ToDoItemDao.dart';
-import 'ToDoItem.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,6 +7,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,45 +32,30 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late BuildContext theContext;
   late TextEditingController _controller;
-  late ToDoItemDao myDAO;
+  List<String> words = [];
 
-  List<ToDoItem> items = [];
-
+  // Initializing the controller
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
-
-    // Initialize the database and load items
-    $FloorToDoDatabase.databaseBuilder('filenameOnYourDevice.db')
-        .build()
-        .then((database) async {
-      myDAO = database.toDoItemDao;
-
-      // Load existing items from the database
-      items = await myDAO.getAllToDoItem();
-      setState(() {}); // Refresh the UI after loading items
-    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
+    _controller.dispose();
   }
 
-  void _incrementCounter() {
+  // Function to add items to the list
+  void _addItem() {
     setState(() {
-      var input = _controller.text;
-      if (input.isNotEmpty) {
-        var todoItem = ToDoItem(ToDoItem.ID++, input);
-        myDAO.insertItem(todoItem); // Save item to the database
-        items.add(todoItem);        // Add item to the local list
-        _controller.clear();         // Clear the text field after adding
-      }
+      words.add(_controller.text);
+      _controller.clear(); // Clear the TextField after adding
     });
   }
 
+  // Remove item with confirmation dialog
   void _confirmDelete(int index) {
     showDialog(
       context: context,
@@ -83,17 +66,16 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close dialog
               },
               child: Text('No'),
             ),
             TextButton(
               onPressed: () {
                 setState(() {
-                  myDAO.deleteToDoItem(items[index]); // Delete from the database
-                  items.removeAt(index);               // Remove item from the local list
+                  words.removeAt(index); // Remove item if 'Yes' is selected
                 });
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close dialog
               },
               child: Text('Yes'),
             ),
@@ -110,52 +92,63 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text("Week 4"),
       ),
       body: Column(
-        children: <Widget>[
+        children: [
+          // Row with TextField and Add Button
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(8.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
+
+                ElevatedButton(
+                  onPressed: _addItem,
+                  child: Text("Add item"),
+                ),
+                Expanded(
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
-                      hintText: "Type something here",
-                      labelText: "Put your first name here",
+                      hintText: "Enter",
                       border: OutlineInputBorder(),
+                      labelText: "To do item",
                     ),
                   ),
                 ),
-                const SizedBox(width: 10), // Spacing between TextField and Button
-                ElevatedButton(
-                  onPressed: _incrementCounter,
-                  child: Text("Add ToDo"),
-                ),
+                const SizedBox(width: 8), // Space between TextField and Button
+
               ],
             ),
           ),
+          // Expanded ListView to show the list items
           Expanded(
-            child: items.isEmpty
+            child: words.isEmpty
                 ? Center(child: Text("There are no items in the list"))
                 : ListView.builder(
               padding: const EdgeInsets.all(8),
-              itemCount: items.length,
+              itemCount: words.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text("Item ${index + 1}: ${items[index].toString()}"),
-                  onLongPress: () => _confirmDelete(index),
+                return GestureDetector(
+                  onLongPress: () => _confirmDelete(index), // Long press to confirm delete
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${index + 1}.', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(words[index]),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Add ToDo',
-        child: const Icon(Icons.add),
       ),
     );
   }
