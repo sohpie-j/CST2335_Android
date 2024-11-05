@@ -5,18 +5,17 @@ import 'package:my_cst2335_labs/ToDoItem.dart';
 @dao
 abstract class ToDoItemDao {
 
-  //return items from the databse
+  //return items from the database
   @Query('Select * from ToDoItem')
   Future<List<ToDoItem>> getAllToDoItem();
 
-  //insert, delete, update
-  @insert
-  void addNewToDoItem (ToDoItem tdi);
+  @insert // generate the insertion code for item in the database
+  Future<void> anyNameYouWant (ToDoItem itm);
 
-  @delete
-  void deleteToDoItem(ToDoItem itm);
+  @delete // generate the delete code for item in the database
+  Future<void> deleteToDoItem(ToDoItem itm);
 
-  @update
-  void updateItem(ToDoItem itm);
+  @update // generate the UPDATE SQL code
+  Future<void> updateItem(ToDoItem itm);
   
 }
