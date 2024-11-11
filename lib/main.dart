@@ -1,174 +1,248 @@
 import 'package:flutter/material.dart';
-import 'package:my_cst2335_labs/ToDoDatabase.dart';
-import 'package:my_cst2335_labs/ToDoItemDao.dart';
-import 'ToDoItem.dart';
+import 'package:my_cst2335_labs/ToDoItem.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final database = await $FloorToDoDatabase.databaseBuilder('app_database.db').build();
-  final dao = database.toDoItemDao;
-  runApp(MyApp(dao));
+import 'ToDoDatabase.dart';
+import 'ToDoItemDAO.dart';
+import 'ToDoItemDao.dart';
+
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final ToDoItemDao dao;
+  const MyApp({super.key});
 
-  MyApp(this.dao);
-
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo Home Page',
+      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        // This is the theme of your application.
+        //
+        // TRY THIS: Try running your application with "flutter run". You'll see
+        // the application has a purple toolbar. Then, without quitting the app,
+        // try changing the seedColor in the colorScheme below to Colors.green
+        // and then invoke "hot reload" (save your changes or press the "hot
+        // reload" button in a Flutter-supported IDE, or press "r" if you used
+        // the command line to start the app).
+        //
+        // Notice that the counter didn't reset back to zero; the application
+        // state is not lost during the reload. To reset the state, use hot
+        // restart instead.
+        //
+        // This works for code too, not just values: Most code changes can be
+        // tested with just a hot reload.
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: ToDoHomePage(dao: dao),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
-class ToDoHomePage extends StatefulWidget {
-  final ToDoItemDao dao;
 
-  ToDoHomePage({required this.dao});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
 
   @override
-  _ToDoHomePageState createState() => _ToDoHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _ToDoHomePageState extends State<ToDoHomePage> {
-  final List<ToDoItem> _items = [];
-  final TextEditingController _textController = TextEditingController();
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadItemsFromDatabase();
+  late TextEditingController _controller; //late - Constructor in initState()
+  late ToDoItemDAO myDAO; //initialized in initState()
+
+  ToDoItem? selectedItem  = null;
+
+  //add items from the database first:
+  List<ToDoItem> items = [];
+
+  var isChecked = false;
+
+  void _incrementCounter() {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
+    });
   }
 
-  Future<void> _loadItemsFromDatabase() async {
-    final items = await widget.dao.getAllToDoItem();
-    setState(() {
-      _items.clear();
-      _items.addAll(items);
-    });
+
+
+  @override //same as in java
+  void initState() {
+    super.initState(); //call the parent initState()
+    _controller = TextEditingController(); //our late constructor
+    //var database = await
+    //open the database:
+    $FloorToDoDatabase.databaseBuilder('filenameOnYourDevice.db').build()
+        .then((database) async {
+
+      myDAO = database.toDoItemDAO;
+      //get Items from database:
+      var it = await myDAO.getAllItems();
+
+      setState(()  {
+        items = it; //Future<> , asnynchronous
+      });
+
+    } ) ;
+  }
+
+
+  @override
+  void dispose()
+  {
+    super.dispose();
+    _controller.dispose();    // clean up memory
   }
 
   @override
   Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text('Flutter Demo Home Page'),
-        ),
-        backgroundColor: Colors.deepPurple[200],
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(6.0),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: _addItem,
-                  child: Text('Add'),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: TextField(
-                        controller: _textController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Enter a to-do item',
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: _items.isEmpty
-                  ? Center(
-                child: Text('There are no items in the list'),
-              )
-                  : ListView.builder(
-                itemCount: _items.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onLongPress: () => _confirmDeleteItem(index),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text('Item $index: ',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text(_items[index].item),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: reactiveLayout(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
-  Future<void> _addItem() async {
-    if (_textController.text.isNotEmpty) {
-      final newItem = ToDoItem(ToDoItem.ID++, _textController.text); // Increment ID for uniqueness
-      await widget.dao.insertItem(newItem); // Insert new item into the database
-      setState(() {
-        _items.add(newItem); // Add new item to the local list
-        _textController.clear(); // Clear the text field
-      });
+  Widget  reactiveLayout() {
+    var size = MediaQuery
+        .of(context)
+        .size;
+    var height = size.height;
+    var width = size.width;
+
+    if ((width > height) && (width > 720)) //landscape
+        {
+      return Row(children: [
+        Expanded(flex: 1 , child:ToDoList()),
+        Expanded(flex: 2, child:DetailsPage())
+      ]);
+    }
+    else //portrait mode
+        {
+      if(selectedItem == null)
+        return ToDoList();
+      else{ //something is selected
+        return DetailsPage();
+      }
     }
   }
 
+  Widget DetailsPage() {
+    TextStyle st = TextStyle(fontSize: 40.0);
 
-  void _confirmDeleteItem(int index) {
-    showDialog(
-      context: this.context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete Item'),
-          content: Text('Do you want to delete this item?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('No'),
-            ),
-            TextButton(
-              onPressed: () {
-                _deleteItem(index);
-                Navigator.of(context).pop();
-              },
-              child: Text('Yes'),
-            ),
-          ],
-        );
-      },
+    return Column(children:[
+
+      if(selectedItem == null)
+        Text("Please select something from the list", style:st)
+      else
+        Text("You selected:" + selectedItem!.item, style:st) //! means non-null assertion
+      ,
+      ElevatedButton(child:Text("Ok"), onPressed: () {
+        //update GUI:
+        setState(() {
+          selectedItem = null; //clear the selection
+        });
+
+
+      })
+
+    ]);
+
+  }
+
+  Widget ToDoList(){
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Row(children: [
+            Flexible(child:
+            TextField(controller: _controller,
+              decoration: InputDecoration(
+                hintText: "Type something here",
+                labelText: "Put your first name here",
+                border: OutlineInputBorder(),
+              ),
+            )),
+
+            ElevatedButton(onPressed: () {
+              //what was typed is:
+              var input = _controller.value.text;
+              //generate UNIQUE ids
+              var todoItem = ToDoItem(ToDoItem.ID++, input);
+              myDAO.insertItem(todoItem);
+
+              setState(() { //redraw the GUI
+
+                items.add(todoItem); //add the item to the LIST
+
+                _controller.text = ""; //reset the textField
+              });
+            }, //Lambda, or anonymous function
+              child: Text("Add ToDO"),)
+          ],),
+          Flexible(child:
+          ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (ctx, rowNum) {
+                return
+                  GestureDetector(
+                      onTap:() {
+                        setState(() {//redraw the GUI:
+                          selectedItem = items[rowNum];
+                        });
+
+                      },
+                      child:
+                      Text("Item $rowNum = ${items[rowNum].item }",
+                        style: TextStyle(fontSize: 30.0),));
+              }))
+        ],
+      ),
     );
+  }//end of reactiveLayout()
+
+  //this runs when you click the button
+  void buttonClicked   ( ){
+
   }
 
-  Future<void> _deleteItem(int index) async {
-    final itemContent = _items[index];
-    await widget.dao.deleteToDoItem(itemContent );
-    setState(() {
-      _items.removeAt(index);
-    });
-  }
+
 }

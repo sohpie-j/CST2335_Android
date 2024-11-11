@@ -1,21 +1,21 @@
 
+
 import 'package:floor/floor.dart';
-import 'package:my_cst2335_labs/ToDoItem.dart';
 
-@dao
-abstract class ToDoItemDao {
+import 'ToDoItem.dart';
 
-  //return items from the database
-  @Query('Select * from ToDoItem')
-  Future<List<ToDoItem>> getAllToDoItem();
+@dao //this understands insert, delete, update, query
+abstract class ToDoItemDAO {
 
-  @insert // generate the insertion code for item in the database
-  Future<void> insertItem (ToDoItem itm);
+  @Query('SELECT * from ToDoItem')
+  Future<List<ToDoItem>> getAllItems(); //asynchronous return 0 or more matches
 
-  @delete // generate the delete code for item in the database
-  Future<void> deleteToDoItem(ToDoItem itm);
+  @insert //generate the insertion code for itm in the database
+  Future<void> insertItem(ToDoItem itm);
 
-  @update // generate the UPDATE SQL code
+  @delete  //generate the delete code for itm in the database
+  Future<void> deleteThisItem(ToDoItem itm);
+
+  @update //generate the UPDATE SQL code
   Future<void> updateItem(ToDoItem itm);
-  
 }

@@ -72,13 +72,13 @@ class _$ToDoDatabase extends ToDoDatabase {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  ToDoItemDao? _toDoItemDaoInstance;
+  ToDoItemDAO? _toDoItemDAOInstance;
 
   Future<sqflite.Database> open(
-    String path,
-    List<Migration> migrations, [
-    Callback? callback,
-  ]) async {
+      String path,
+      List<Migration> migrations, [
+        Callback? callback,
+      ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
       version: 1,
       onConfigure: (database) async {
@@ -105,33 +105,33 @@ class _$ToDoDatabase extends ToDoDatabase {
   }
 
   @override
-  ToDoItemDao get toDoItemDao {
-    return _toDoItemDaoInstance ??= _$ToDoItemDao(database, changeListener);
+  ToDoItemDAO get toDoItemDAO {
+    return _toDoItemDAOInstance ??= _$ToDoItemDAO(database, changeListener);
   }
 }
 
-class _$ToDoItemDao extends ToDoItemDao {
-  _$ToDoItemDao(
-    this.database,
-    this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
+class _$ToDoItemDAO extends ToDoItemDAO {
+  _$ToDoItemDAO(
+      this.database,
+      this.changeListener,
+      )   : _queryAdapter = QueryAdapter(database),
         _toDoItemInsertionAdapter = InsertionAdapter(
             database,
             'ToDoItem',
-            (ToDoItem item) =>
-                <String, Object?>{'id': item.id, 'item': item.item}),
+                (ToDoItem item) =>
+            <String, Object?>{'id': item.id, 'item': item.item}),
         _toDoItemUpdateAdapter = UpdateAdapter(
             database,
             'ToDoItem',
             ['id'],
-            (ToDoItem item) =>
-                <String, Object?>{'id': item.id, 'item': item.item}),
+                (ToDoItem item) =>
+            <String, Object?>{'id': item.id, 'item': item.item}),
         _toDoItemDeletionAdapter = DeletionAdapter(
             database,
             'ToDoItem',
             ['id'],
-            (ToDoItem item) =>
-                <String, Object?>{'id': item.id, 'item': item.item});
+                (ToDoItem item) =>
+            <String, Object?>{'id': item.id, 'item': item.item});
 
   final sqflite.DatabaseExecutor database;
 
@@ -146,8 +146,8 @@ class _$ToDoItemDao extends ToDoItemDao {
   final DeletionAdapter<ToDoItem> _toDoItemDeletionAdapter;
 
   @override
-  Future<List<ToDoItem>> getAllToDoItem() async {
-    return _queryAdapter.queryList('Select * from ToDoItem',
+  Future<List<ToDoItem>> getAllItems() async {
+    return _queryAdapter.queryList('SELECT * from ToDoItem',
         mapper: (Map<String, Object?> row) =>
             ToDoItem(row['id'] as int, row['item'] as String));
   }
@@ -163,7 +163,7 @@ class _$ToDoItemDao extends ToDoItemDao {
   }
 
   @override
-  Future<void> deleteToDoItem(ToDoItem itm) async {
+  Future<void> deleteThisItem(ToDoItem itm) async {
     await _toDoItemDeletionAdapter.delete(itm);
   }
 }
