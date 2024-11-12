@@ -10,6 +10,6 @@ abstract class ToDoItemDao {
   @insert
   Future<void> insertToDoItem(ToDoItem item);
 
-  @Query('DELETE FROM ToDoItem WHERE content = :content')
-  Future<void> deleteToDoItemByContent(String content);
+  @delete
+  Future<void> deleteToDoItemByContent(ToDoItem content);
 }
