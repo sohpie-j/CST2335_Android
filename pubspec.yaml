@@ -38,6 +38,7 @@ dependencies:
   floor: ^1.5.0
   floor_generator: ^1.5.0
   sqflite: ^2.0.0+3
+  dartdoc: ^8.1.0
 
 dev_dependencies:
   flutter_test:
